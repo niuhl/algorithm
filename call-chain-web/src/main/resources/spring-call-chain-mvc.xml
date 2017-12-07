@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/mvc
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+                        
+    <!-- 自动扫描该包，使SpringMVC认为包下用了@controller注解的类是控制器 -->
+    <context:component-scan base-package="com.mljr.malm.account.controller" />
+    
+   	<mvc:default-servlet-handler default-servlet-name="default"/> 
+	<!-- 启动注解驱动的Spring MVC功能，注册请求url和注解POJO类方法的映射 -->
+	<mvc:annotation-driven />
+	
+	<!-- 配置UTF-8编码输出 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/html;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+                <!--fastjosn spring support-->
+                <bean id="jsonConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                    <property name="supportedMediaTypes" value="application/json;charset=UTF-8" />
+                    <property name="features">
+                        <list>
+                            <!--<value>WriteMapNullValue</value>-->
+                            <value>QuoteFieldNames</value>
+                            <value>WriteNullStringAsEmpty</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- 对模型视图名称的解析，即在模型视图名称添加前后缀 -->
+	<!-- 定义JSP文件的位置 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <!-- 配置文件上传，如果没有使用文件上传可以不用配置，当然如果不配，那么配置文件中也不必引入上传组件包 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 默认编码 -->
+        <property name="defaultEncoding" value="utf-8" />
+        <!-- 文件大小最大值 -->
+        <property name="maxUploadSize" value="10485760000" />
+        <!-- 内存中的最大值 -->
+        <property name="maxInMemorySize" value="40960" />
+    </bean>
+
+    <!--<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">-->
+        <!--<property name="resourceLoaderPath" value="/WEB-INF/view"/>-->
+        <!--<property name="configLocation" value="classpath:velocity.properties"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">-->
+        <!--<property name="order" value="2"/>-->
+        <!--<property name="suffix" value=".vm"/>-->
+        <!--<property name="prefix" value="/"/>-->
+        <!--<property name="exposeSpringMacroHelpers" value="true"/>-->
+        <!--<property name="requestContextAttribute" value="rc"/>-->
+        <!--<property name="contentType" value="text/html;charset=UTF-8"/>-->
+        <!--<property name="dateToolAttribute">-->
+            <!--<value>date</value>-->
+        <!--</property>-->
+        <!--&lt;!&ndash;<property name="toolboxConfigLocation" value="/WEB-INF/toolbox.xml"/>&ndash;&gt;-->
+    <!--</bean>-->
+
+
+    <!--配置拦截器, 多个拦截器,顺序执行 -->
+    <!--  
+	<mvc:interceptors>
+	    <mvc:interceptor>
+	       <mvc:mapping path="/**" />
+	       <mvc:exclude-mapping path="/index/login.do"/>  
+	       <bean class="com.mljr.malm.repayment.core.framework.spring.SecurityInterceptor" />
+	    </mvc:interceptor>
+	</mvc:interceptors>
+	-->
+    <!--定义异常处理页面-->
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="com.mljr.malm.account.core.framework.exception.AuthorizationException">login</prop>
+                <prop key="com.mljr.malm.account.core.framework.exception.BusinessException">public/error</prop>
+            </props>
+        </property>
+    </bean>
+    
+</beans>

@@ -1,0 +1,9 @@
+/target/
+/bin/
+/.settings/
+/.classpath
+/.project
+src/main/resources/dubbo-consumer.properties
+.iml/
+**/*.iml
+**/.DS_Store
